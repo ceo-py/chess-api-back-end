@@ -85,8 +85,8 @@ def register():
     if not doc:
         users_collection.insert_one(new_user)
         return jsonify({'msg': 'User created successfully'}), 201
-    else:
-        return jsonify({'msg': 'Username already exists'}), 409
+
+    return jsonify({'msg': 'Username already exists'}), 409
 
 
 @app.route("/api/v1/user", methods=["GET"])
@@ -97,9 +97,10 @@ def profile():
     if user_from_db:
         del user_from_db['_id'], user_from_db['password']
         return jsonify({'profile': user_from_db}), 200
-    else:
-        return jsonify({'msg': 'Profile not found'}), 404
+
+    return jsonify({'msg': 'Profile not found'}), 404
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=7777, ssl_context='adhoc')
+    # app.run(host='0.0.0.0', port=7777, ssl_context='adhoc')
+    app.run(host='0.0.0.0', port=7777)
