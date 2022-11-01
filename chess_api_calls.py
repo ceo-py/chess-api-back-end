@@ -16,16 +16,6 @@ jwt = JWTManager(app)
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)  # define the life span of the token
 
-'''
-id na igrite da 
-end point /games        - POST(create), GET(Read)
-end point /games/{id}   - GET, PUT(update), DELETE
-
-634ec812dc1f8594e91d3ff1
-imena na igrachi v bodito eventualno za suzdavane
-
-'''
-
 
 @app.route("/games", methods=["POST"])
 def main_game():
