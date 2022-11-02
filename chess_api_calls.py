@@ -35,7 +35,6 @@ def show_board():
 def json_req():
     '''
     [{'current pos': [1, 0], 'target pos': [2, 0]}]
-
     :return:
     {'current pos': [0, 6], 'target pos': [0, 5]}
     '''
@@ -56,12 +55,13 @@ def json_req():
 @app.route("/api/v1/login", methods=["POST"])
 def login():
     login_details = request.get_json()
-    user_from_db = users_collection.find_one({'username': login_details['username']})
+    user_from_db = users_collection.find_one({'email': login_details['email']})
 
     if user_from_db:
         encrpted_password = hashlib.sha256(login_details['password'].encode("utf-8")).hexdigest()
         if encrpted_password == user_from_db['password']:
-            access_token = create_access_token(identity=user_from_db['username'])
+            del user_from_db['_id'], user_from_db['password']
+            access_token = create_access_token(identity=user_from_db['email'])
             return jsonify(access_token=access_token), 200
 
     return jsonify({'msg': 'The username or password is incorrect'}), 401
@@ -71,19 +71,19 @@ def login():
 def register():
     new_user = request.get_json()
     new_user["password"] = hashlib.sha256(new_user["password"].encode("utf-8")).hexdigest()
-    doc = users_collection.find_one({"username": new_user["username"]})
+    doc = users_collection.find_one({"email": new_user["email"]})
     if not doc:
         users_collection.insert_one(new_user)
         return jsonify({'msg': 'User created successfully'}), 201
 
-    return jsonify({'msg': 'Username already exists'}), 409
+    return jsonify({'msg': 'email already exists'}), 409
 
 
 @app.route("/api/v1/user", methods=["GET"])
 @jwt_required()
 def profile():
     current_user = get_jwt_identity()
-    user_from_db = users_collection.find_one({'username': current_user})
+    user_from_db = users_collection.find_one({'email': current_user})
     if user_from_db:
         del user_from_db['_id'], user_from_db['password']
         return jsonify({'profile': user_from_db}), 200
